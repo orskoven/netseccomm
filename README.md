@@ -1,6 +1,6 @@
-# 📡 Network Security Architecture Report – Fortune 10 Compliance
+# 📡 Network Security Architecture Report
 
-**Author**: ChatGPT — Cybersecurity Architect  
+**Author**: Liban, Youssef, Ferhat, Simon 
 **Audience**: Enterprise Network Security Teams, SOC Analysts, Architecture Review Boards  
 **Confidentiality**: Internal Use Only  
 **Last Reviewed**: 2025-05-02
@@ -10,87 +10,8 @@
 ## 🔐 Executive Summary
 
 This report outlines a zero-trust, stateful firewall policy design and ACL enforcement structure for a midsize organization, based on Fortune 10 best practices. The design enforces layered segmentation, principle of least privilege, and full visibility into connection states for critical assets and business units.
+___
 
----
-```mermaid
-flowchart LR
-    %% ================= Zones =================
-    subgraph INTERNET [🌐 Internet Zone]
-        EXT_USERS[External Users]
-        CDN[CDN / Update Servers]
-        DNS[8.8.8.8 (Public DNS)]
-    end
-
-    subgraph DMZ [🔒 DMZ Zone]
-        WEB1[WEB1 - Public Web Server]
-    end
-
-    subgraph INTERNAL [🏢 Internal Network]
-        DB01[DB01 - App DB (MySQL)]
-        DB02[DB02 - Data Warehouse]
-        WEB2[WEB2 - Internal Tools]
-        FIL1[FIL1 - File Server]
-    end
-
-    subgraph DEV [🧪 Development Zone]
-        DEV_WEB1[Dev-WEB1 (Clone)]
-        DEV_DB01[Dev-DB01 (Clone)]
-        DEV_WEB2[Dev-WEB2 (Clone)]
-        DEV_DB02[Dev-DB02 (Clone)]
-        DEV_TEAM[Dev Team (10 Hosts)]
-    end
-
-    subgraph USERS [👥 User VLANs]
-        SALES[Sales Team (50 Hosts)]
-        SUPPORT[Support Team (10 Hosts)]
-    end
-
-    subgraph WIFI [📶 WiFi Guest]
-        WIFI_USERS[WiFi Users]
-    end
-
-    %% =============== Trusted Flows ===================
-    EXT_USERS -->|HTTP/HTTPS| WEB1
-    WEB1 -->|TCP 3306| DB01
-    SALES -->|SMB / SQL| FIL1
-    SALES -->|SQL| DB02
-    SUPPORT -->|HTTPS Tools| WEB2
-
-    DEV_TEAM --> DEV_WEB1
-    DEV_TEAM --> DEV_DB01
-    DEV_TEAM --> DEV_WEB2
-    DEV_TEAM --> DEV_DB02
-    DEV_TEAM --> WEB1
-    DEV_TEAM --> DB01
-    DEV_TEAM --> WEB2
-    DEV_TEAM --> DB02
-    DEV_TEAM --> FIL1
-
-    FIL1 --> DB02
-
-    WIFI_USERS -->|HTTP/HTTPS| CDN
-    WIFI_USERS -->|DNS| DNS
-
-    %% =============== Denied/Restricted ================
-    WIFI_USERS -.x DB01
-    WIFI_USERS -.x DB02
-    WIFI_USERS -.x WEB2
-    WIFI_USERS -.x FIL1
-    WIFI_USERS -.x SALES
-    WIFI_USERS -.x SUPPORT
-
-    %% =============== Firewall Labels =================
-    INTERNET -. FW1 -. DMZ
-    DMZ -. FW2 -. INTERNAL
-    DEV -. FW3 -. INTERNAL
-    WIFI -. FW4 -. INTERNET
-
-    %% =============== Styles =================
-    classDef zone fill:#f9f9f9,stroke:#333,stroke-width:1.5px;
-    class INTERNET,DMZ,INTERNAL,DEV,USERS,WIFI zone;
-
-
-```
 ___
 
 ## 🧱 Network Components
