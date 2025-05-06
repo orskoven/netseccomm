@@ -90,6 +90,7 @@ ___
 
 ---
 
+
 ## ✅ Summary of Security Posture
 
 - **Segmentation**: Enforced across DMZ, internal, development, and guest zones  
@@ -110,4 +111,120 @@ ___
 
 ---
 
+
+* 🧱 Reflects **segmentation**
+* 🛡️ Integrates **IDS/IPS placement**
+* 📍 Shows **firewall tiers**
+* 🔁 Supports **stateful inspection logic**
+* 📌 Is fully mappable to your ACL and policy table
+
+---
+
+```css
+                        ┌──────────────────────────────┐
+                        │         🌐 INTERNET          │
+                        └─────────────┬────────────────┘
+                                      │
+                         ┌────────────▼────────────┐
+                         │  🛡️ EDGE FIREWALL + NIPS │
+                         └────────────┬────────────┘
+                                      │
+                         ┌────────────▼────────────┐
+                         │         DMZ ZONE         │
+                         ├──────────────────────────┤
+                         │  [WEB1] Public Web Server│
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────▼────────────┐
+                         │ 🛡️ INTERNAL FIREWALL + IDS│
+                         └────────────┬────────────┘
+                                      │
+        ┌──────────────┬─────────────┴──────────────┬───────────────┐
+        │              │                            │               │
+ ┌──────▼─────┐  ┌─────▼──────┐              ┌──────▼─────┐   ┌─────▼──────┐
+ │ [WEB2]     │  │  [DB01]    │              │  [DB02]    │   │  [FIL1]    │
+ │ Internal   │  │ Production │              │ Warehouse  │   │ File Server│
+ │ Tools      │  │ Database   │              └────────────┘   └────────────┘
+ └────────────┘  └────────────┘
+
+───────────────────────────────────────────────────────────────────────────────
+
+                           VLAN / USER ACCESS ZONES
+
+        ┌────────────┬────────────┬─────────────┐
+        │            │            │             │
+ ┌──────▼────┐ ┌─────▼────┐ ┌─────▼────┐   ┌────▼───────┐
+ │  [SALES]  │ │[SUPPORT] │ │  [DEV]   │   │  [WIFI]    │
+ │ 50 Users  │ │ 10 Users │ │ 10 Users │   │ Guest Only │
+ │ Access to │ │ Web2     │ │ Full     │   │ Internet   │
+ │ DB02, FIL1│ │ Tools    │ │ Access   │   │ (No LAN)   │
+ └───────────┘ └──────────┘ └──────────┘   └────────────┘
+
+───────────────────────────────────────────────────────────────────────────────
+
+                              MONITORING / SIEM
+
+                       ┌─────────────────────────────┐
+                       │  🔍 Security Onion Stack     │
+                       │  (Suricata, Zeek, Wazuh)     │
+                       └─────────────────────────────┘
+
+                          ⇧ Log Forwarding from:
+                          - Edge Firewall
+                          - Internal Firewall
+                          - Hosts (via Wazuh)
+                          - Network sensors
+
+```
+---
+
+## 🧠 Visualization Mapping:
+
+* **🛡️ IDS/IPS Placement**:
+
+  * NIPS at **edge firewall**
+  * IDS (via Suricata/Zeek) at **internal firewall**
+
+* **🎯 Zero Trust Enforcement**:
+
+  * **No implicit trust** between VLANs or internal zones
+  * **Policy-driven access** only
+
+* **📈 Monitoring**:
+
+  * All traffic logs shipped to **Security Onion stack**
+  * Integrated with tools like:
+
+    * **Wazuh** for HIDS
+    * **Grafana/Kibana** for dashboards
+    * **CyberChef/Strelka** for investigation
+
+---
+
+## 🔗 Tool Integration References
+
+| Tool           | Functionality                           | Link                                                |
+| -------------- | --------------------------------------- | --------------------------------------------------- |
+| Suricata       | NIDS/NIPS                               | [suricata.io](https://suricata.io)                  |
+| Zeek           | Network traffic analyzer                | [zeek.org](https://zeek.org)                        |
+| Wazuh          | HIDS and log aggregation                | [wazuh.com](https://wazuh.com)                      |
+| Strelka        | File scanning engine                    | [Strelka GitHub](https://github.com/target/strelka) |
+| CyberChef      | Binary/hex/anomaly parsing              | [CyberChef](https://gchq.github.io/CyberChef/)      |
+| Security Onion | Full stack security monitoring platform | [securityonion.net](https://securityonion.net)      |
+| Grafana        | Metrics and dashboarding                | [grafana.com](https://grafana.com)                  |
+| Kibana         | Log analytics                           | [elastic.co/kibana](https://www.elastic.co/kibana)  |
+
+---
+
+## 🚦Operational Takeaways
+
+* ✅ **Dual-layer inspection**: External and internal traffic analyzed by separate sensors.
+* ✅ **Segmentation-aware ACL enforcement**: VLANs cannot communicate laterally without explicit rules.
+* ✅ **Stateful validation**: TCP ACK matching for reverse flow approvals.
+* ✅ **Guest VLAN isolation**: Only internet access via controlled ports (80/443).
+* ✅ **Audit-ready topology**: Mappable back to ACL, flow logs, and SIEM alerts.
+
+
+
+___
 > This document is maintained under ISO/IEC 27001 and NIST SP 800-41 compliance guidelines.
