@@ -8,6 +8,96 @@
 ---
 ## Network Architecture
 
+# Chapter: Subnetting for a Midsize Company Network Redesign
+
+## Introduction
+
+In this chapter, we will design a subnetted network for a midsize company using the private Class B IP range **172.16.0.0/12**. This network will support various departments, servers, and services, ensuring efficient communication, security, and scalability.
+
+## Network Requirements
+
+The company requires the following network components:
+
+* **Public-Facing Web Server**: \[WEB1]
+* **Internal Web Server**: \[WEB2]
+* **Public-Facing Database Server**: \[DB01]
+* **Internal Database Server**: \[DB02]
+* **File Server**: \[FIL1]
+* **Sales Team**: Approximately 50 hosts
+* **Technical Support Team**: Approximately 10 hosts
+* **Development Team**: Approximately 10 hosts
+* **Development Environment**: Clone of the 4 servers (excluding FIL1)
+* **Wi-Fi Access**: Internet-only access for company devices
+
+## Subnetting Strategy
+
+Given the diverse requirements, we'll subnet the **172.16.0.0/12** network into smaller subnets using a **255.255.255.192 (/26)** subnet mask. This provides:
+
+* **Subnets**: 64 subnets
+* **Hosts per Subnet**: 62 usable IP addresses
+
+This segmentation ensures efficient IP address allocation and enhances network security by isolating different departments and services.
+
+## Subnet Allocation
+
+| Subnet Name           | IP Range        | Usable IPs       | Purpose                                      |
+| --------------------- | --------------- | ---------------- | -------------------------------------------- |
+| **Web Servers**       | 172.16.0.0/26   | 172.16.0.1–62    | \[WEB1], \[DB01]                             |
+| **Internal Servers**  | 172.16.0.64/26  | 172.16.0.65–126  | \[WEB2], \[DB02], \[FIL1]                    |
+| **Sales Team**        | 172.16.0.128/26 | 172.16.0.129–190 | Sales workstations                           |
+| **Technical Support** | 172.16.0.192/26 | 172.16.0.193–254 | Support workstations                         |
+| **Development Team**  | 172.16.1.0/26   | 172.16.1.1–62    | Dev workstations                             |
+| **Dev Servers**       | 172.16.1.64/26  | 172.16.1.65–126  | Clones of \[WEB1], \[DB01], \[WEB2], \[DB02] |
+| **Wi-Fi Access**      | 172.16.1.128/26 | 172.16.1.129–190 | Internet-only access for company devices     |
+
+## Network Diagram
+
+Below is a simplified network diagram illustrating the subnetting and connections:
+
+```plaintext
+                        +---------------------+
+                        |      Internet       |
+                        +---------------------+
+                                |
+                        +---------------------+
+                        |   Edge Router (R1)   |
+                        +---------------------+
+                                |
+              +----------------+----------------+
+              |                                 |
+   +-------------------+             +-------------------+
+   |   Web Servers     |             | Internal Servers   |
+   |  172.16.0.0/26    |             | 172.16.0.64/26     |
+   +-------------------+             +-------------------+
+              |                                 |
+   +-------------------+             +-------------------+
+   | Sales Team        |             | Technical Support  |
+   | 172.16.0.128/26   |             | 172.16.0.192/26    |
+   +-------------------+             +-------------------+
+              |                                 |
+   +-------------------+             +-------------------+
+   | Development Team  |             | Dev Servers        |
+   | 172.16.1.0/26     |             | 172.16.1.64/26     |
+   +-------------------+             +-------------------+
+              |
+   +-------------------+
+   | Wi-Fi Access      |
+   | 172.16.1.128/26   |
+   +-------------------+
+```
+
+## Security Considerations
+
+* **Firewalls**: Implement firewalls between subnets to control traffic flow and enhance security.
+* **Access Control Lists (ACLs)**: Use ACLs to restrict access between subnets based on the principle of least privilege.
+* **Network Address Translation (NAT)**: Apply NAT on the edge router to allow internal devices to access the internet while keeping internal IPs private.
+
+## Conclusion
+
+By subnetting the **172.16.0.0/12** network into smaller, manageable subnets, we ensure efficient IP address utilization, enhanced security, and scalability for the company's growing needs. This design provides clear segmentation between departments and services, facilitating easier management and troubleshooting.
+
+For a more detailed configuration and implementation guide, refer to the official documentation and best practices provided by networking standards organizations.
+
 
 
 ___
