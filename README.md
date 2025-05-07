@@ -6,10 +6,98 @@
 **Last Reviewed**: 2025-05-02
 
 ---
+## Network Architecture
 
-## 🔐 Executive Summary
 
-This report outlines a zero-trust, stateful firewall policy design and ACL enforcement structure for a midsize organization, based on Fortune 10 best practices. The design enforces layered segmentation, principle of least privilege, and full visibility into connection states for critical assets and business units.
+
+___
+
+
+## Introduction
+
+Dagligt bliver kommuner og virksomheder i Danmark ramt af ondsindet angreb mod deres netværk.
+Netværk kan designes, så de kan lukke ned for ondsindet traffic og kun tillade bestemt trafik på nettet. 
+
+## Subnetting 
+
+For at vi kan skræddersy netværksregler, der kun tillader en bestemt "sikker" trafik, indeler vi netværket i subnets.
+
+## Opdeling af subnets
+
+Subnets kan gøre vores netværk mere sikkert og nemmere at bruge.
+Ved at indele et netværk i subnets kan vi åbne trafikken for godkendte brugere, afhæningt af IPv4 addressen, og blokerer adgangen for alle andre.
+
+
+### Udvælgelse af prefix og CIDR
+
+IP addressen danner rammen for al kommunikation via internettet. Uden en IP addresse kan vi ikke modtage eller sende pakker, på tværs af de forbunde enheder på netværket. 
+
+IP addresser findes i 2 udgaver hhv. IPv4 (den "gamle" og korte) og IPv6 ("den nye" og længere).
+
+IP addresser kan anvendes af både de "gode" og "onde".
+
+### prefix og CIDR
+
+For at vi kan skille de gode fra de onde, anvender vi subnets.
+
+Vi udnytter IPv4 addressens bits og CIDR notation.
+
+### Metode
+
+
+
+
+I bestemmelsen af IPv4 addresser og CIDR notation for subnettet, bruger vi virksomhedens logiske afdelinger hhv.: 
+- salg
+- teknisksupport
+- udvikling
+- gæster
+
+
+
+Vi tildeler de enkelte afdelinger deres egen
+
+Disse subnets, er bestemt på baggrund af forventet antal brugerer på nettet.
+
+
+Vi anvender FIGUR 1, hvorfra vi har valgt følgende
+
+---
+
+### 📊 IP Subnetting Table (CIDR to Hosts) FIGUR 1
+
+| CIDR Notation | Subnet Mask     | # of Hosts (Usable) | IP Range Size | Notes                       |
+| ------------- | --------------- | ------------------- | ------------- | --------------------------- |
+| /32           | 255.255.255.255 | 1                   | 1             | Single host (loopback, etc) |
+| /31           | 255.255.255.254 | 2 (point-to-point)  | 2             | Special use for P2P links   |
+| /30           | 255.255.255.252 | 2                   | 4             | Small subnets               |
+| /29           | 255.255.255.248 | 6                   | 8             |                             |
+| /28           | 255.255.255.240 | 14                  | 16            |                             |
+| /27           | 255.255.255.224 | 30                  | 32            |                             |
+| /26           | 255.255.255.192 | 62                  | 64            |                             |
+| /25           | 255.255.255.128 | 126                 | 128           |                             |
+| /24           | 255.255.255.0   | 254                 | 256           | Class C size                |
+| /23           | 255.255.254.0   | 510                 | 512           |                             |
+| /22           | 255.255.252.0   | 1022                | 1024          |                             |
+| /21           | 255.255.248.0   | 2046                | 2048          |                             |
+| /20           | 255.255.240.0   | 4094                | 4096          |                             |
+| /19           | 255.255.224.0   | 8190                | 8192          |                             |
+| /18           | 255.255.192.0   | 16,382              | 16,384        |                             |
+| /17           | 255.255.128.0   | 32,766              | 32,768        |                             |
+| /16           | 255.255.0.0     | 65,534              | 65,536        | Class B size                |
+| /15           | 255.254.0.0     | 131,070             | 131,072       |                             |
+| /14           | 255.252.0.0     | 262,142             | 262,144       |                             |
+| /13           | 255.248.0.0     | 524,286             | 524,288       |                             |
+| /12           | 255.240.0.0     | 1,048,574           | 1,048,576     | Class A block               |
+| /11           | 255.224.0.0     | 2,097,150           | 2,097,152     |                             |
+| /10           | 255.192.0.0     | 4,194,302           | 4,194,304     |                             |
+| /9            | 255.128.0.0     | 8,388,606           | 8,388,608     |                             |
+| /8            | 255.0.0.0       | 16,777,214          | 16,777,216    | Entire Class A              |
+
+___
+
+
+
 ___
 
 ___
