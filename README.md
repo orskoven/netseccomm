@@ -36,23 +36,29 @@ IP addresser findes i 2 udgaver hhv. IPv4 (den "gamle" og korte) og IPv6 ("den n
 
 IP addresser kan anvendes af både de "gode" og "onde".
 
-### prefix og CIDR
+### IPv4 udvælgelse
 
-For at vi kan skille de gode fra de onde, anvender vi subnets.
+For at vi kan skille de gode fra de onde, anvender tager vi udgangspunkt i IPv4 addressen.
+
+### Trinsvis fremgangsmåde
+
+1. Udvægelses af en lokal ip addresse
+
+V
+
 
 Vi udnytter IPv4 addressens bits og CIDR notation.
 
 ### Metode
 
 
-
-
-I bestemmelsen af IPv4 addresser og CIDR notation for subnettet, bruger vi virksomhedens logiske afdelinger hhv.: 
+Først betragter vi virksomhedens logiske opdeling af arbejdsområder hhv.: 
 - salg
 - teknisksupport
 - udvikling
 - gæster
 
+Da subnetting og adgangskontrollen ikke bør interferer og modarbejde arbejdsgange, udvælger 
 
 
 Vi tildeler de enkelte afdelinger deres egen
