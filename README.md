@@ -7,96 +7,100 @@
 
 ---
 ## Network Architecture
+Absolutely. Let's now **fully align the ASCII network diagram** with the **mandatory requirements** of your mid-size company network redesign project for the KEA course.
 
-# Chapter: Subnetting for a Midsize Company Network Redesign
+We'll base it on:
 
-## Introduction
+* Clear **network segmentation** by function and trust level
+* Accurate **IP address assignments** (as per requirement)
+* Proper **security zone enforcement** (stateful firewall, monitoring)
+* Use of **non-vendor-specific components**
+* Logical **port access planning**
 
-In this chapter, we will design a subnetted network for a midsize company using the private Class B IP range **172.16.0.0/12**. This network will support various departments, servers, and services, ensuring efficient communication, security, and scalability.
+---
 
-## Network Requirements
+## ✅ **Enhanced ASCII Network Diagram – KEA Mandatory Project**
 
-The company requires the following network components:
+```
+                                ┌───────────────────────┐
+                                │    Internet / ISP      │
+                                └─────────┬──────────────┘
+                                          │
+                             ┌────────────▼─────────────┐
+                             │ Perimeter Firewall (NGFW)│◄───▶ [PORTS: 80, 443, DNS, VPN]
+                             └────┬─────────────┬────────┘
+                                  │             │
+                    ┌────────────▼───┐     ┌────▼─────────┐
+                    │  DMZ Switch     │     │ WiFi Access  │
+                    └────┬────┬───────┘     │ Point (Corp) │
+                         │    │             └────┬─────────┘
+        ┌────────────┐ ┌─▼────▼───┐                 ▼
+        │   WEB1     │ │  DB01    │       [WiFi Subnet: 192.168.10.0/24]
+        │ (Public)   │ │ (Public) │     [Access: Internet only via FW]
+        └────────────┘ └──────────┘
 
-* **Public-Facing Web Server**: \[WEB1]
-* **Internal Web Server**: \[WEB2]
-* **Public-Facing Database Server**: \[DB01]
-* **Internal Database Server**: \[DB02]
-* **File Server**: \[FIL1]
-* **Sales Team**: Approximately 50 hosts
-* **Technical Support Team**: Approximately 10 hosts
-* **Development Team**: Approximately 10 hosts
-* **Development Environment**: Clone of the 4 servers (excluding FIL1)
-* **Wi-Fi Access**: Internet-only access for company devices
+       [DMZ Subnet: 192.168.1.0/24]
 
-## Subnetting Strategy
+                                  │
+                 ┌────────────────▼────────────────┐
+                 │ Internal Stateful Firewall (ISFW)│◄─▶ [PORTS: 80/443/22/3306/SMB]
+                 └────┬────────────┬───────────────┘
+                      │            │
+                      │            └────────────────────────────────┐
+                      │                                             │
+     ┌────────────────▼───────┐                         ┌───────────▼────────────┐
+     │   Core Layer 3 Switch  │                         │  Net Monitoring Zone   │
+     │ (Inter-VLAN Routing)   │                         │  FPC / NetFlow / SIEM  │
+     └──────┬────┬────┬───────┘                         └────────────────────────┘
+            │    │    │
+            │    │    └─────────────────────────────────────────────────────┐
+            │                                                              │
 
-Given the diverse requirements, we'll subnet the **172.16.0.0/12** network into smaller subnets using a **255.255.255.192 (/26)** subnet mask. This provides:
+   ┌────────▼────────┐      ┌────────▼─────────┐     ┌────────▼─────────┐   ┌────────▼──────────┐
+   │ VLAN10 - Sales  │      │ VLAN20 - Support │     │ VLAN30 - DevTeam │   │ VLAN40 - Servers  │
+   │ 172.16.10.0/24   │     │ 172.16.20.0/24    │    │ 172.16.30.0/24   │   │ 172.16.40.0/24     │
+   │ ~50 Hosts        │     │ ~10 Hosts         │    │ ~10 Hosts        │   │ Internal Web & DB  │
+   └──────┬───────────┘     └───────┬───────────┘    └───────┬──────────┘   └──────┬────────────┘
+          │                         │                        │                        │
+   ┌──────▼───────┐         ┌───────▼────────┐       ┌───────▼───────┐        ┌──────▼───────┐
+   │ Access: FIL1 │         │ Access: WEB2   │       │ Access: ALL   │        │ FIL1 Server  │
+   │ Access: DB02 │         │ (CRM tools)    │       │ DEV ENV CLONE │        │  DB02 Server │
+   └──────────────┘         └────────────────┘       └────────────────┘        └──────────────┘
 
-* **Subnets**: 64 subnets
-* **Hosts per Subnet**: 62 usable IP addresses
-
-This segmentation ensures efficient IP address allocation and enhances network security by isolating different departments and services.
-
-## Subnet Allocation
-
-| Subnet Name           | IP Range        | Usable IPs       | Purpose                                      |
-| --------------------- | --------------- | ---------------- | -------------------------------------------- |
-| **Web Servers**       | 172.16.0.0/26   | 172.16.0.1–62    | \[WEB1], \[DB01]                             |
-| **Internal Servers**  | 172.16.0.64/26  | 172.16.0.65–126  | \[WEB2], \[DB02], \[FIL1]                    |
-| **Sales Team**        | 172.16.0.128/26 | 172.16.0.129–190 | Sales workstations                           |
-| **Technical Support** | 172.16.0.192/26 | 172.16.0.193–254 | Support workstations                         |
-| **Development Team**  | 172.16.1.0/26   | 172.16.1.1–62    | Dev workstations                             |
-| **Dev Servers**       | 172.16.1.64/26  | 172.16.1.65–126  | Clones of \[WEB1], \[DB01], \[WEB2], \[DB02] |
-| **Wi-Fi Access**      | 172.16.1.128/26 | 172.16.1.129–190 | Internet-only access for company devices     |
-
-## Network Diagram
-
-Below is a simplified network diagram illustrating the subnetting and connections:
-
-```plaintext
-                        +---------------------+
-                        |      Internet       |
-                        +---------------------+
-                                |
-                        +---------------------+
-                        |   Edge Router (R1)   |
-                        +---------------------+
-                                |
-              +----------------+----------------+
-              |                                 |
-   +-------------------+             +-------------------+
-   |   Web Servers     |             | Internal Servers   |
-   |  172.16.0.0/26    |             | 172.16.0.64/26     |
-   +-------------------+             +-------------------+
-              |                                 |
-   +-------------------+             +-------------------+
-   | Sales Team        |             | Technical Support  |
-   | 172.16.0.128/26   |             | 172.16.0.192/26    |
-   +-------------------+             +-------------------+
-              |                                 |
-   +-------------------+             +-------------------+
-   | Development Team  |             | Dev Servers        |
-   | 172.16.1.0/26     |             | 172.16.1.64/26     |
-   +-------------------+             +-------------------+
-              |
-   +-------------------+
-   | Wi-Fi Access      |
-   | 172.16.1.128/26   |
-   +-------------------+
+DEV Environment Clone Zone:
+[VLAN31-34] 172.16.31-34.0/24 (WEB1-CL, WEB2-CL, DB01-CL, DB02-CL)
 ```
 
-## Security Considerations
+---
 
-* **Firewalls**: Implement firewalls between subnets to control traffic flow and enhance security.
-* **Access Control Lists (ACLs)**: Use ACLs to restrict access between subnets based on the principle of least privilege.
-* **Network Address Translation (NAT)**: Apply NAT on the edge router to allow internal devices to access the internet while keeping internal IPs private.
+## 🔐 Security Zones & IP Plan
 
-## Conclusion
+| Zone/Segment     | IP Range          | Access                      | Comments                    |
+| ---------------- | ----------------- | --------------------------- | --------------------------- |
+| DMZ              | 192.168.1.0/24    | Public-facing WEB1 & DB01   | Protected by perimeter NGFW |
+| Corporate WiFi   | 192.168.10.0/24   | Internet only               | No internal network access  |
+| Sales VLAN       | 172.16.10.0/24    | Internet, FIL1, DB02        | Controlled by ISFW          |
+| Support VLAN     | 172.16.20.0/24    | Internet, WEB2              | Limited access              |
+| Development VLAN | 172.16.30.0/24    | Full access to all zones    | Privileged zone             |
+| Internal Servers | 172.16.40.0/24    | Hosts: WEB2, DB02, FIL1     | Not internet-facing         |
+| DEV Clone Zones  | 172.16.31-34.0/24 | Accessed only by Dev VLAN   | Isolated from production    |
+| Monitoring       | 10.10.10.0/24     | Passive TAPs, SIEM, NetFlow | Not routable from users     |
 
-By subnetting the **172.16.0.0/12** network into smaller, manageable subnets, we ensure efficient IP address utilization, enhanced security, and scalability for the company's growing needs. This design provides clear segmentation between departments and services, facilitating easier management and troubleshooting.
+---
 
-For a more detailed configuration and implementation guide, refer to the official documentation and best practices provided by networking standards organizations.
+## 🔒 Abstract Firewall Rules (Stateful)
+
+| Source VLAN    | Destination        | Protocol/Port         | Allow? |
+| -------------- | ------------------ | --------------------- | ------ |
+| Internet       | WEB1               | TCP/80, TCP/443       | ✅      |
+| WEB1           | DB01 (DMZ)         | TCP/3306 (MySQL)      | ✅      |
+| Sales          | FIL1, DB02         | TCP/445, TCP/3306     | ✅      |
+| Support        | WEB2               | TCP/443               | ✅      |
+| DevTeam        | All internal zones | ALL (except Mgmt Net) | ✅      |
+| Corporate WiFi | Internet only      | TCP/80, TCP/443       | ✅      |
+| Any            | Monitoring Network | NONE (mirror only)    | ❌      |
+
+---
 
 
 
