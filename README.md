@@ -4,6 +4,77 @@
 **Audience**: Enterprise Network Security Teams, SOC Analysts, Architecture Review Boards  
 **Confidentiality**: Internal Use Only  
 **Last Reviewed**: 2025-05-02
+___
+
+Port configuration for a **cloned database** must follow **strict network security principles**—only necessary ports should be open, access should be tightly controlled, and all traffic should be monitored. Here’s how you should configure ports from a **Cyber Network Security Architect** perspective:
+
+---
+
+### 🔧 **1. Allow Only Essential Database Ports**
+
+#### Examples by DB Type:
+
+| Database      | Default Port | Purpose             |
+| ------------- | ------------ | ------------------- |
+| PostgreSQL    | 5432         | Client connection   |
+| MySQL/MariaDB | 3306         | Client connection   |
+| Microsoft SQL | 1433         | Client connection   |
+| Oracle DB     | 1521         | Oracle Net Listener |
+| MongoDB       | 27017        | Primary DB access   |
+
+* Only open the **specific port** your cloned DB service uses.
+* Use **non-standard ports** if feasible to reduce scanning exposure.
+
+---
+
+### 🔐 **2. Restrict Access with Firewall Rules / Security Groups**
+
+* Allow traffic **only from approved IPs**, subnets, or application servers.
+* Block **public internet access** unless explicitly required (and protected with VPN or bastion host).
+* Use **host-based firewalls (iptables, Windows Defender Firewall)** and **network-level firewalls** or **cloud security groups**.
+
+---
+
+### 🧱 **3. Use Layered Security**
+
+* **Network Segmentation**: Place the cloned DB in its own VLAN, subnet, or VPC.
+* **Ingress Controls**: Configure security groups or NSGs to:
+
+  * Allow inbound only on the required DB port
+  * Deny all other inbound connections
+* **Egress Controls**: Limit outbound traffic if the clone does not require it.
+
+---
+
+### 📡 **4. Secure the Connection Path**
+
+* Require **SSL/TLS encryption** for all connections over open ports.
+* Use **VPN tunnels** or **private endpoints** (e.g., AWS PrivateLink, Azure Private Link) for external connectivity.
+
+---
+
+### 📋 Example: Port Rule for a Cloned PostgreSQL Database
+
+```json
+{
+  "port": 5432,
+  "protocol": "TCP",
+  "source": "10.0.1.0/24",
+  "destination": "10.0.2.10",
+  "action": "ALLOW",
+  "description": "Allow only internal app subnet to access cloned PostgreSQL DB"
+}
+```
+
+---
+
+### ⚠️ Additional Tips
+
+* Monitor port activity with **IDS/IPS** and **SIEM logging**.
+* Regularly audit security groups and firewall rules for drift.
+* Use **port knocking** or **bastion hosts** for admin-level access if needed.
+
+Would you like a sample firewall rule set for a specific cloud provider (AWS, Azure, etc.)?
 
 ---
 ## Network Architecture
